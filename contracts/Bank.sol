@@ -1,15 +1,19 @@
-// SPDX-License-Identifier: UNLICENSED
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.27;
 
 contract Bank {
-    mapping (address=>uint) vault;
+    mapping(address => uint) vault;
 
-    function check() view public returns (uint) {
+    function check() public view returns (uint) {
         return vault[msg.sender];
     }
 
-    function save(uint money) public {
-        vault[msg.sender] += money;
+    function bankBalance() public view returns (uint) {
+        return address(this).balance;
+    }
+
+    function save() public payable  {
+        vault[msg.sender] += msg.value;
     }
 
     function withdraw(uint money) public {

@@ -16,20 +16,31 @@ describe("Bank", function () {
         it("Should set the right balance", async function () {
             const { bank } = await loadFixture(deploy);
             expect(await bank.check()).to.equal(0);
-            await bank.save(1);
+            await bank.save({ value: 1 });
             expect(await bank.check()).to.equal(1);
-            await bank.save(99);
+            await bank.save({ value: 99 });
             expect(await bank.check()).to.equal(100);
         })
     });
 
     describe("Withdraw", function () {
         it("Should set the right balance", async function () {
+            const { bank, owner } = await loadFixture(deploy);
+            expect(await bank.check()).to.equal(0);
+            await bank.save({ value: 1 });
+            expect(await bank.check()).to.equal(1);
+            await expect(bank.withdraw(1)).to.changeEtherBalances(
+                [owner, bank],
+                [1, -1]
+            );
+        });
+
+        it("Should revert", async function () {
             const { bank } = await loadFixture(deploy);
             expect(await bank.check()).to.equal(0);
-            await bank.save(1);
+            await bank.save({ value: 1 });
             expect(await bank.check()).to.equal(1);
-            expect(await bank.withdraw(1)).to.be.ok;
-        })
+            await expect(bank.withdraw(2)).to.be.revertedWith("not enough balance");
+        });
     });
 });
